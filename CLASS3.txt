@@ -1,0 +1,147 @@
+drop table book_lending;
+drop table card1;
+drop table book_copies1;
+drop table library_progarmme1;
+drop table Book_authors;
+drop table book;
+drop table publisher;
+
+create table publisher(
+	name varchar(15),
+	address varchar(30),
+	phone number(12),
+	primary key(name)
+);
+
+create table book(
+	book_id number(5),
+	tittle varchar(20),
+	publisher_name varchar(15),
+	pub_year date,
+	primary key(book_id),
+	foreign key (publisher_name) references publisher(name)
+);
+
+create table Book_authors(
+	book_id number(5),
+	author_name varchar(15),
+	primary key(author_name),
+	foreign key(book_id) references book(book_id) on delete cascade
+);
+
+create table library_progarmme(
+	programme_id number(3),
+	programme_name varchar(15),
+	address varchar(20),
+	primary key(programme_id)
+);
+
+create table book_copies(
+	book_id number(5),
+	programme_id number(3),
+	no_of_copies number(6),
+	primary key (book_id , programme_id),
+	foreign key (book_id) references book(book_id) on delete cascade,
+	foreign key (programme_id) references library_progarmme(programme_id) on delete cascade
+);
+
+
+create table card(
+	card_no number(3),
+	primary key(card_no)
+	);
+
+create table book_lending(
+	book_id number(5),
+	programme_id number(3),
+	card_no number(5),
+	date_out date,
+	date_in date,
+	primary key (book_id , programme_id,card_no),
+	foreign key (book_id) references book(book_id)on delete cascade,
+	foreign key (programme_id) references library_progarmme(programme_id)on delete cascade,
+	foreign key (card_no) references card(card_no)on delete cascade
+);
+
+
+insert into publisher values('joythi', 'karkala',1234567890);
+insert into publisher values('raj', 'moodubire',3478126589);
+insert into publisher values('xyz', 'blore',98753479);
+insert into publisher values('ragunath', 'mysore',98753479);
+insert into publisher values('xxyy', 'mumbai',98093479);
+
+insert into book values(12345,'aaaa','joythi','10-mar-2000');
+insert into book values(13245,'bbbb','raj','11-aug-2011');
+insert into book values(14235,'cccc','xyz','1-jun-2003');
+insert into book values(15423,'dddd','ragunath','11-dec-2003');
+insert into book values(16354,'eeee','xxyy','10-nov-2003');
+
+insert into Book_authors values(12345,'ramesh');
+insert into Book_authors values(13245,'ragu');
+insert into Book_authors values(14235,'rajesh');
+insert into Book_authors values(15423,'jagdesh');
+insert into Book_authors values(16354,'shilesh');
+
+insert into library_progarmme values(123,'alpha','abc');
+insert into library_progarmme values(124,'beta','bcd');
+insert into library_progarmme values(125,'gamma','cdf');
+insert into library_progarmme values(126,'theta','def');
+insert into library_progarmme values(127,'pi','efg');
+
+insert into book_copies values(12345,123,100000);
+insert into book_copies values(13245,124,200000);
+insert into book_copies values(14235,125,300000);
+insert into book_copies values(15423,126,400000);
+insert into book_copies values(16354,127,500000);
+
+insert into card values(200);
+insert into card values(201);
+insert into card values(202);
+insert into card values(203);
+insert into card values(204);
+
+insert into book_lending values(12345,123,200,'10-mar-2000','20-mar-2000');
+insert into book_lending values(13245,124,201,'1-jan-2000','10-jan-2000');
+insert into book_lending values(14235,125,202,'20-nov-2000','30-nov-2000');
+insert into book_lending values(15423,126,203,'11-mar-2000','21-mar-2000');
+insert into book_lending values(16354,127,204,'15-jun-2000','25-jun-2000');
+
+
+insert into book_lending values(13245,123,200,'10-mar-2017','20-mar-2017');
+insert into book_lending values(14235,123,200,'10-mar-2017','20-mar-2017');
+insert into book_lending values(15423,123,200,'10-mar-2017','20-mar-2017');
+insert into book_lending values(16354,123,200,'10-mar-2017','20-mar-2017');
+
+select b.book_id,b.tittle,b.publisher_name,a.author_name,c.no_of_copies,l.programme_id
+from book b, Book_authors a, book_copies c, book_lending l
+where b.book_id = c.book_id and b.book_id = l.book_id and b.book_id = a.book_id;
+
+select card_no
+from book_lending
+where date_out between '01-jan-2017' and '01-jun-2017'
+group by card_no
+having count(*) > 3;
+
+delete from book where book_id = 12345 ;
+select * from book;
+select * from book_copies;
+select * from book_lending;
+
+
+
+create view v_publication as
+select pub_year from book;
+
+select * from v_publication;
+
+
+
+create view v_book as 
+select b.book_id, b.tittle, c.no_of_copies
+from book b,book_copies c ,library_progarmme l
+where b.book_id = c.book_id and l.programme_id  = c.programme_id;
+
+select * from book;
+
+
+ 
